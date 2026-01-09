@@ -86,4 +86,4 @@ Configuration generation completed.
 Restarting Unbound.....
 EOF
 
-"/usr/sbin/su -m unbound -c 'unbound-control -c /var/unbound/unbound.conf reload'"
+"/usr/bin/su -m unbound -c 'unbound-control -c /var/unbound/unbound.conf reload'"
