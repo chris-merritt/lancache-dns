@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-basedir=".."
+basedir="."
 outputdir="/etc/unbound/unbound.conf.d/"
 path="${basedir}/cache_domains.json"
 repo="https://raw.githubusercontent.com/uklans/cache-domains/refs/heads/master"
@@ -37,7 +37,7 @@ while read -r entry; do
 	key=$(jq -r ".cache_domains[${entry}].name" ${path})
 	cachename="cachename${key}"
 	if [ -z "${!cachename}" ]; then
-		cachename="cachenamedefault"
+		continue
 	fi
 	if [[ ${cachename} == "disabled" ]]; then
 		continue
