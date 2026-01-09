@@ -1,0 +1,15 @@
+{
+  "combined_output": true,
+  "ips": {
+    "lancache": "192.168.1.203",
+    "steamcache": "192.168.1.204"
+  },
+  "cache_domains": {
+    "epicgames": "lancache",
+    "blizzard": "lancache",
+    "origin": "lancache",
+    "uplay": "lancache",
+    "steam": "steamcache",
+    "wsus": "lancache"
+  }
+}
