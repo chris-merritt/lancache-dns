@@ -48,7 +48,7 @@ while read -r entry; do
 		while read -r filename; do
 			downloadfile="${repo}/${filename}"
 			echo "Downloading ${filename}"
-			curl "${downloadfile}" > "${basedir}/${filename}" 
+			curl -s "${downloadfile}" > "${basedir}/${filename}" 
 			destfilename=${filename//txt/conf}
 			outputfile=${outputdir}/${destfilename}
 			touch "${outputfile}"
