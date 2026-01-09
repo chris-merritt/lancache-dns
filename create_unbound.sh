@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 basedir="/root/lancache"
-outputdir="/etc/unbound/"
-finaldir="/var/unbound/"
+outputdir="${basedir}/unbound"
+finaldir="/var/unbound"
 path="${basedir}/cache_domains.json"
 repo="https://raw.githubusercontent.com/uklans/cache-domains/refs/heads/master"
 
@@ -85,4 +85,4 @@ Configuration generation completed.
 Restarting Unbound.....
 EOF
 
-/usr/sbin/su -m unbound -c 'unbound-control -c /var/unbound/unbound.conf reload'
+#/usr/sbin/su -m unbound -c 'unbound-control -c /var/unbound/unbound.conf reload'
