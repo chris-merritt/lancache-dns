@@ -1,40 +1,46 @@
-#!/usr/local/bin/bash
+#!/usr/bin/env bash
 basedir="/root/lancache"
 outputdir="${basedir}/unbound"
 finaldir="/var/unbound"
 path="${basedir}/cache_domains.json"
+log="/dev/null"
+config="${basedir}/config.json"
 repo="https://raw.githubusercontent.com/uklans/cache-domains/refs/heads/master"
 
 export IFS=" "
 
-echo "Downloading cache_domains.json"
-/usr/local/bin/curl -s "${repo}/cache_domains.json" > "${path}"
+echo "Downloading cache_domains.json" >> "${log}"
+curl -s "${repo}/cache_domains.json" > "${path}"
 
 if ! command -v jq >/dev/null; then
-	cat <<-EOF
+	cat <<-EOF >> "${log}"
 		This script requires jq to be installed.
 		Your package manager should be able to find it
 	EOF
 	exit 1
 fi
 
-combinedoutput=$(jq -r ".combined_output" config.json)
+combinedoutput=$(jq -r ".combined_output" "${config}")
+echo "combinedoutput = ${combinedoutput}" >> "${log}"
 
 while read -r line; do
-	ip=$(jq ".ips[\"${line}\"]" config.json)
+	ip=$(jq ".ips[\"${line}\"]" "${config}")
 	declare "cacheip${line}"="${ip}"
-done <<<"$(jq -r ".ips | to_entries[] | .key" config.json)"
+done <<<"$(jq -r ".ips | to_entries[] | .key" "${config}")"
 
 while read -r line; do
-	name=$(jq -r ".cache_domains[\"${line}\"]" config.json)
+	echo "line = ${line}" >> "${log}"
+	name=$(jq -r ".cache_domains[\"${line}\"]" "${config}")
 	declare "cachename${line}"="${name}"
-done <<<"$(jq -r ".cache_domains | to_entries[] | .key" config.json)"
+done <<<"$(jq -r ".cache_domains | to_entries[] | .key" "${config}")"
 
 mkdir -p ${outputdir}
 mkdir -p ${finaldir}
+echo "Making directories ${outputdir} & ${finaldir}" >> "${log}"
 while read -r entry; do
 	unset cacheip
 	unset cachename
+	echo "entry = ${entry}" >> "${log}"
 	key=$(jq -r ".cache_domains[${entry}].name" ${path})
 	cachename="cachename${key}"
 	if [ -z "${!cachename}" ]; then
@@ -48,8 +54,8 @@ while read -r entry; do
 	while read -r fileid; do
 		while read -r filename; do
 			downloadfile="${repo}/${filename}"
-			echo "Downloading ${filename}"
-			/usr/local/bin/curl -s "${downloadfile}" > "${basedir}/${filename}" 
+			echo "Downloading ${filename}" >> "${log}"
+			curl -s "${downloadfile}" > "${basedir}/${filename}" 
 			destfilename=${filename//txt/conf}
 			outputfile=${outputdir}/${destfilename}
 			touch "${outputfile}"
@@ -75,15 +81,15 @@ while read -r entry; do
 done <<<"$(jq -r ".cache_domains | to_entries[] | .key" ${path})"
 
 if [[ ${combinedoutput} == "true" ]]; then
-	for file in "${outputdir}"/*; do f=${file//${outputdir}\//} && f=${f//.conf/} && echo "# ${f^}" >>${outputdir}/lancache.conf && cat "${file}" >>${outputdir}/lancache.conf && rm "${file}"; done
-	mv "${outputdir}/lancache.conf" "${basedir}/lancache.conf"
-	cp "${basedir}/lancache.conf" "${finaldir}/lancache.conf"
+	for file in "${outputdir}"/*; do f=${file//${outputdir}\//} && f=${f//.conf/} && echo "# ${f^}" >>${basedir}/lancache.conf && cat "${file}" >>${basedir}/lancache.conf && rm "${file}"; done
+	echo "Copying File" >> "${log}"
+	cp ${basedir}/lancache.conf ${finaldir}/lancache.conf
 fi
 
-cat <<EOF
+cat <<EOF >> "${log}"
 Configuration generation completed.
 
 Restarting Unbound.....
 EOF
 
-/usr/bin/su -m unbound -c '/usr/local/sbin/unbound-control -c /var/unbound/unbound.conf reload'
+/usr/bin/su -m unbound -c 'unbound-control -c /var/unbound/unbound.conf reload' >> "${log}" 2>&1
