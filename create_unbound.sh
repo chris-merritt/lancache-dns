@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
+basedir="/root/lancache"
 outputdir="/etc/unbound/"
 finaldir="/var/unbound/"
-path="cache_domains.json"
+path="${basedir}/cache_domains.json"
 repo="https://raw.githubusercontent.com/uklans/cache-domains/refs/heads/master"
 
 export IFS=" "
