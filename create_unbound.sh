@@ -6,7 +6,8 @@ repo="https://raw.githubusercontent.com/uklans/cache-domains/refs/heads/master"
 
 export IFS=" "
 
-curl "${repo}/cache_domains.json" > "${path}"
+echo "Downloading cache_domains.json"
+curl -s "${repo}/cache_domains.json" > "${path}"
 
 if ! command -v jq >/dev/null; then
 	cat <<-EOF
@@ -46,6 +47,7 @@ while read -r entry; do
 	while read -r fileid; do
 		while read -r filename; do
 			downloadfile="${repo}/${filename}"
+			echo "Downloading ${filename}"
 			curl "${downloadfile}" > "${basedir}/${filename}" 
 			destfilename=${filename//txt/conf}
 			outputfile=${outputdir}/${destfilename}
