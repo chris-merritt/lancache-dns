@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/local/bin/bash
 basedir="/root/lancache"
 outputdir="${basedir}/unbound"
 finaldir="/var/unbound"
