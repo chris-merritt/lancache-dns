@@ -80,8 +80,9 @@ while read -r entry; do
 done <<<"$(jq -r ".cache_domains | to_entries[] | .key" ${path})"
 
 if [[ ${combinedoutput} == "true" ]]; then
-	for file in "${outputdir}"/*; do f=${file//${outputdir}\//} && f=${f//.conf/} && echo "# ${f^}" >>${basedir}/lancache.conf && cat "${file}" >>${basedir}/lancache.conf && rm "${file}"; done
+	for file in "${outputdir}"/*; do f=${file//${outputdir}\//} && f=${f//.conf/} && echo "# ${f^}" >>${basedir}/lancache.temp && cat "${file}" >>${basedir}/lancache.temp && rm "${file}"; done
 	echo "Copying File" >> "${log}"
+	mv ${basedir}/lancache.temp ${basedir}/lancache.conf
 	cp ${basedir}/lancache.conf ${finaldir}/lancache.conf
 fi
 
