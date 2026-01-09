@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-basedir="."
-outputdir="/var/unbound/"
-path="${basedir}/cache_domains.json"
+outputdir="/etc/unbound/"
+finaldir="/var/unbound/"
+path="cache_domains.json"
 repo="https://raw.githubusercontent.com/uklans/cache-domains/refs/heads/master"
 
 export IFS=" "
@@ -29,8 +29,8 @@ while read -r line; do
 	declare "cachename${line}"="${name}"
 done <<<"$(jq -r ".cache_domains | to_entries[] | .key" config.json)"
 
-rm -rf ${outputdir}
 mkdir -p ${outputdir}
+mkdir -p ${finaldir}
 while read -r entry; do
 	unset cacheip
 	unset cachename
@@ -75,6 +75,7 @@ done <<<"$(jq -r ".cache_domains | to_entries[] | .key" ${path})"
 
 if [[ ${combinedoutput} == "true" ]]; then
 	for file in "${outputdir}"/*; do f=${file//${outputdir}\//} && f=${f//.conf/} && echo "# ${f^}" >>${outputdir}/lancache.conf && cat "${file}" >>${outputdir}/lancache.conf && rm "${file}"; done
+	cp ${outputdir}/lancache.conf ${finaldir}
 fi
 
 cat <<EOF
