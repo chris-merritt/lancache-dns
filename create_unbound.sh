@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 basedir="."
-outputdir="/etc/unbound/unbound.conf.d/"
+outputdir="/var/unbound/"
 path="${basedir}/cache_domains.json"
 repo="https://raw.githubusercontent.com/uklans/cache-domains/refs/heads/master"
 
