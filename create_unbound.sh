@@ -76,7 +76,8 @@ done <<<"$(jq -r ".cache_domains | to_entries[] | .key" ${path})"
 
 if [[ ${combinedoutput} == "true" ]]; then
 	for file in "${outputdir}"/*; do f=${file//${outputdir}\//} && f=${f//.conf/} && echo "# ${f^}" >>${outputdir}/lancache.conf && cat "${file}" >>${outputdir}/lancache.conf && rm "${file}"; done
-	cp ${outputdir}/lancache.conf ${finaldir}
+	mv "${outputdir}/lancache.conf" "${basedir}/lancache.conf"
+	cp "${basedir}/lancache.conf" "${finaldir}/lancache.conf"
 fi
 
 cat <<EOF
