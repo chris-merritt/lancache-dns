@@ -36,7 +36,6 @@ done <<<"$(jq -r ".cache_domains | to_entries[] | .key" "${config}")"
 
 mkdir -p ${outputdir}
 mkdir -p ${finaldir}
-echo "Making directories ${outputdir} & ${finaldir}" >> "${log}"
 while read -r entry; do
 	unset cacheip
 	unset cachename
@@ -92,4 +91,4 @@ Configuration generation completed.
 Restarting Unbound.....
 EOF
 
-/usr/bin/su -m unbound -c 'unbound-control -c /var/unbound/unbound.conf reload' >> "${log}" 2>&1
+su -m unbound -c 'unbound-control -c /var/unbound/unbound.conf reload' >> "${log}" 2>&1
